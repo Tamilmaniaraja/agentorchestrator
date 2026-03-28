@@ -83,7 +83,11 @@ requirements.md
 
 ### Usage
 
-1. Clone this repo into your project or copy the `.github/agents/` folder.
+1. Copy the `agents/` folder into your project's `.github/agents/` directory.
+
+   ```bash
+   cp -r agents/ your-project/.github/agents/
+   ```
 
 2. Write your requirements in a `.md` file (see [`ProjectRequirement.md`](ProjectRequirement.md) as an example).
 
@@ -137,8 +141,8 @@ docs/<project-name>/
 │   ├── stakeholder-register.md
 │   ├── communication-plan.md
 │   └── project-management-plan.md
-├── .github/agents/
-│   └── <project-name>-<role>.agent.md   # one per team member
+├── agents/
+│   └── <project-name>-<role>.agent.md   # one per team member (copy to .github/agents/ to use)
 └── team-roster.md
 ```
 
@@ -206,7 +210,7 @@ See [`ProjectRequirement.md`](ProjectRequirement.md) for a worked example — it
 
 ## Agents in your project
 
-The generated team agents under `docs/<project-name>/.github/agents/` are real Claude Code agents. After the orchestrator run, any team member agent can be invoked directly:
+The generated team agents are written to `docs/<project-name>/agents/`. To use them, copy them into your project's `.github/agents/` directory — Claude Code discovers agents from there automatically. They are real Claude Code agents. After the orchestrator run, any team member agent can be invoked directly:
 
 ```
 /agent your-project-ios-developer E2-S1

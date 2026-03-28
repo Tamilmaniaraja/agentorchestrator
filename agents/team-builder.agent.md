@@ -38,7 +38,7 @@ Present the proposed team to the user and ask for confirmation or changes before
 ### Step 3 — Determine Output Location
 
 - Use the project name established by the orchestrator, or infer it from the requirements document.
-- All team agent files are created in `docs/<project-name>/.github/agents/` with the project name as a prefix: `<project-name>-<role>.agent.md`.
+- All team agent files are created in `docs/<project-name>/agents/` with the project name as a prefix: `<project-name>-<role>.agent.md`.
 - This co-locates team agents alongside all other project documents under `docs/<project-name>/`.
 
 ### Step 4 — Create Agent File for Each Team Member

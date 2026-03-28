@@ -33,7 +33,7 @@ Read all files under:
 - `docs/<project-name>/data/` (if present)
 - `docs/<project-name>/ml/` (if present)
 - `docs/<project-name>/compliance/` (if present)
-- `docs/<project-name>/.github/agents/` (all `.agent.md` files)
+- `docs/<project-name>/agents/` (all `.agent.md` files)
 - `docs/<project-name>/team-roster.md`
 
 Also read the original requirements document as the source of truth.
@@ -66,7 +66,7 @@ For every technical spec file present under `docs/<project-name>/` (architecture
 
 #### Team Agent Files (`.agent.md`)
 
-Review every `.agent.md` file under `docs/<project-name>/.github/agents/`:
+Review every `.agent.md` file under `docs/<project-name>/agents/`:
 
 - **`name` field**: Present, lowercase-hyphenated, prefixed with the project name.
 - **`description` field**: Present and project-specific — not generic boilerplate.

@@ -106,7 +106,7 @@ Because the Requirements Summary is provided, `team-builder` will skip its own p
 
 The `team-builder` agent will:
 - Propose a team composition and confirm it with the user
-- Create individual `.agent.md` files for each team member under `docs/<project-name>/.github/agents/` prefixed with `<project-name>-`
+- Create individual `.agent.md` files for each team member under `docs/<project-name>/agents/` prefixed with `<project-name>-`
 - Assign `runCommands` to coding roles (developers, architect, QA, ML/AI engineer, DevOps) and omit it for non-coding roles (PM, BA, Designer)
 - Include a project-specific `argument-hint` in every agent file with concrete story ID examples
 - Add an `## Available Skills` section to each agent file listing skills relevant to that role
