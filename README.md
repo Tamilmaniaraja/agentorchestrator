@@ -176,7 +176,7 @@ A strict documentation reviewer with expertise in PMBOK 7th edition, Scrum, and 
 
 ## Example output
 
-The [`docs/lumina/`](docs/lumina/) folder contains real output generated from [`ProjectRequirement.md`](ProjectRequirement.md) — a native iPadOS app with on-device AI, cryptographic vaults, and compliance requirements. It includes:
+The [`docs/your-project/`](docs/your-project/) folder contains real output generated from [`ProjectRequirement.md`](ProjectRequirement.md) — a native iPadOS app with on-device AI, cryptographic vaults, and compliance requirements. It includes:
 
 - 8 Epics, 48 User Stories, 476 total story points
 - 6 delivery sprints + buffer sprint
@@ -209,9 +209,9 @@ See [`ProjectRequirement.md`](ProjectRequirement.md) for a worked example — it
 The generated team agents under `docs/<project-name>/.github/agents/` are real Claude Code agents. After the orchestrator run, any team member agent can be invoked directly:
 
 ```
-/agent lumina-ios-developer E2-S1
-/agent lumina-security-engineer "review Sprint 1 threat model gaps"
-/agent lumina-project-manager "Sprint 2 planning blockers"
+/agent your-project-ios-developer E2-S1
+/agent your-project-security-engineer "review Sprint 1 threat model gaps"
+/agent your-project-project-manager "Sprint 2 planning blockers"
 ```
 
 Each agent already knows the project's tech stack, has working agreements pointing to the generated spec files, and has the right tool permissions for its role (coding roles get `runCommands`; non-coding roles do not).
@@ -233,7 +233,7 @@ At Step 5 (team confirmation), you can reject the proposed team and describe wha
 This happens if a technical spec stub was skipped because the condition wasn't met (e.g., no ML/AI detected, so `ml/pipeline-design.md` was not created), but the Definition of Done or an agent Working Agreement still references it. Re-run the reviewer — it catches and reports all dangling path references.
 
 **How long does a run take?**
-A typical project takes 5–12 minutes end-to-end depending on complexity and how many reviewer iterations are needed. The LUMINA example (8 epics, 48 stories, 7 tech spec stubs, 8 team agents) took approximately 10 minutes including two reviewer passes.
+A typical project takes 5–12 minutes end-to-end depending on complexity and how many reviewer iterations are needed. The example project (8 epics, 48 stories, 7 tech spec stubs, 8 team agents) took approximately 10 minutes including two reviewer passes.
 
 ---
 
