@@ -71,7 +71,10 @@ Create the following files in `docs/<project-name>/agile/`:
 - **Acceptance criteria**: Every story must have a minimum of **3 Gherkin scenarios**: (1) a happy-path success case, (2) a boundary or edge case, (3) an error or failure path. Do not leave any story with fewer than 3.
 - **Definition of Done**: Only reference documents that are explicitly created as part of this workflow (i.e. files under `docs/<project-name>/`). Do not reference external guides, style guides, or documents that do not exist in the project repository.
 - **Backlog stories**: When a story title could be confused with scaffolding or setup work already delivered in an earlier sprint, add a disambiguation note in the story description making clear what the delta is.
-- **Point arithmetic**: The sprint point total in `sprint-plan.md` must exactly match the Sprint 1 total in `release-roadmap.md`. Verify this before proceeding to Step 6.
+- **Point arithmetic** — verify all three of these before proceeding to Step 6:
+  1. Sprint 1 total in `sprint-plan.md` must exactly equal the Sprint 1 row total in `release-roadmap.md`.
+  2. Sum of all sprint totals in `release-roadmap.md` must equal the grand total in `product-backlog.md`.
+  3. Sum of story points within each epic in `product-backlog.md` must equal the epic-level point total stated in that epic's header.
 
 ### Step 6 — Generate Technical Specification Stubs
 
@@ -100,23 +103,34 @@ Invoke the `team-builder` agent, passing:
 - The path to the requirements document
 - The project name determined in Step 2
 - The **Requirements Summary** from Step 1 (inline — concise bullet format as returned by `probe`)
-- The list of generated technical spec file paths from Step 6, so team agents can reference them in their Working Agreements
+- The list of generated technical spec file paths from Step 6, so team agents can reference them in their `## Expertise & Constraints` sections
 
 Because the Requirements Summary is provided, `team-builder` will skip its own probing step and proceed directly to proposing the team composition.
 
 The `team-builder` agent will:
 - Propose a team composition and confirm it with the user
 - Create individual `.agent.md` files for each team member under `docs/<project-name>/agents/` prefixed with `<project-name>-`
+- Each agent file will include: a `## Context Rules` section, a `## Workflow` section with the 5-step story execution flow (read contract → read referenced specs → execute deliverables → self-check → report back), `## Responsibilities`, `## Expertise & Constraints`, and optionally `## Available Skills` — following the micro-task subagent architecture
 - Assign `runCommands` to coding roles (developers, architect, QA, ML/AI engineer, DevOps) and omit it for non-coding roles (PM, BA, Designer)
-- Include a project-specific `argument-hint` in every agent file with concrete story ID examples
-- Add an `## Available Skills` section to each agent file listing skills relevant to that role
+- Include a project-specific `argument-hint` in every agent file with concrete story ID examples using this project's actual story IDs
+- Add an `## Available Skills` section to each agent file only when skills are relevant to that role
 - Produce a `team-roster.md` under `docs/<project-name>/`
 
 Wait for `team-builder` to report back with all created agent file paths before proceeding.
 
-### Step 8 — Review Loop
+### Step 8 — Pre-Review File Path Scan
 
-After all documents are generated, invoke the `reviewer` agent, passing only:
+Before invoking the reviewer, do a self-check to avoid unnecessary reviewer cycles:
+
+1. List every file path referenced inside `docs/<project-name>/agile/definition-of-done.md` and inside every `.agent.md` file's `## Expertise & Constraints` section and `## Workflow` section (spec paths that agents will read).
+2. For each referenced path, confirm the file exists on disk under `docs/<project-name>/`.
+3. For any path that does not exist and is not explicitly labelled "future deliverable", either create the missing file (if it is a required artifact from Steps 4–6) or update the reference to remove it.
+
+Only proceed to Step 9 once all referenced paths are accounted for.
+
+### Step 9 — Review Loop
+
+After all documents are generated, invoke the `reviewer` agent, passing:
 - The project name
 - The path to the requirements document
 
@@ -125,7 +139,14 @@ The reviewer reads all files itself. Do not pass document content inline.
 - If the reviewer returns **REQUIRES FIXES**, address every reported issue in the relevant files.
 - After fixing, invoke the `reviewer` agent again.
 - Repeat this loop until the reviewer returns **APPROVED** with no remaining issues.
+- **Loop safeguard**: If the reviewer has returned **REQUIRES FIXES** five or more times without reaching **APPROVED**, stop the loop, report all remaining issues to the user with the reviewer's latest output, and ask the user for guidance. Do not continue looping indefinitely.
 
-### Step 9 — Done
+### Step 10 — Done
 
 Summarize what was created, list all generated file paths (documents + team agent files), and confirm the reviewer's final **APPROVED** verdict.
+
+> **Handoff to execution:** The orchestrator handles project **setup** — generating all documentation, specs, and team agents. To begin running the project story by story, invoke the `project-manager` agent:
+>
+> `project-manager <project-name> sprint 1`
+>
+> The project-manager assigns stories to team agents as micro-task subagents, tracks progress in `docs/<project-name>/progress.md`, and verifies each story with the reviewer before marking it done.

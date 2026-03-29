@@ -36,41 +36,88 @@ Everything is reviewed by a strict reviewer agent and iterated until approved.
 
 ## How it works
 
-Four agents coordinate in sequence:
+The system runs in two phases — **Setup** and **Execution** — each driven by a different agent.
+
+### Phase 1 — Setup (`orchestrator`)
+
+The `orchestrator` is the controller. You invoke it once; it coordinates all other agents:
 
 ```
-requirements.md
-      │
-      ▼
- ┌─────────────┐
- │    probe    │  Reads the requirements, resolves ambiguities,
- │             │  returns a dense Requirements Summary
- └──────┬──────┘
-        │ Requirements Summary (≤600 tokens)
-        ▼
- ┌─────────────┐
- │orchestrator │  Generates all Agile + technical spec artifacts
- │             │  in docs/<project-name>/
- └──────┬──────┘
-        │
-        ▼
- ┌─────────────┐
- │team-builder │  Proposes team composition, creates one
- │             │  .agent.md per team member
- └──────┬──────┘
-        │
-        ▼
- ┌─────────────┐
- │  reviewer   │  Reads every generated file, checks completeness,
- │             │  cross-consistency, and methodology correctness
- └──────┬──────┘
-        │ REQUIRES FIXES → orchestrator fixes → reviewer re-checks
-        │ APPROVED ✅
-        ▼
-  docs/<project-name>/
+You invoke: orchestrator ProjectRequirement.md
+                    │
+                    ▼
+           ┌─────────────────┐
+           │   orchestrator  │  Controls the full setup pipeline
+           └──┬──────────────┘
+              │
+              │ 1. invokes probe ──────────────────────────────────┐
+              │                                                     │
+              │          ┌─────────────┐                           │
+              │          │    probe    │  Reads requirements,       │
+              │          │             │  returns Requirements      │
+              │          │             │  Summary (≤600 tokens)     │
+              │          └──────┬──────┘                           │
+              │                 │ summary returned to orchestrator  │
+              │◄────────────────┘                                  │
+              │                                                     │
+              │ 2. generates all Agile + tech spec artifacts        │
+              │    in docs/<project-name>/                          │
+              │                                                     │
+              │ 3. invokes team-builder ──────────────────────────┐ │
+              │                                                   │ │
+              │          ┌─────────────┐                         │ │
+              │          │team-builder │  Proposes team, creates  │ │
+              │          │             │  one .agent.md per role  │ │
+              │          └──────┬──────┘                         │ │
+              │                 │ agent paths returned            │ │
+              │◄────────────────┘                                │ │
+              │                                                   │ │
+              │ 4. invokes reviewer ──────────────────────────────┘ │
+              │                                                      │
+              │          ┌─────────────┐                            │
+              │          │  reviewer   │  Checks every file for     │
+              │          │             │  completeness, arithmetic,  │
+              │          │             │  and cross-consistency      │
+              │          └──────┬──────┘                            │
+              │                 │                                    │
+              │    REQUIRES FIXES → orchestrator fixes → re-review  │
+              │    APPROVED ✅                                       │
+              │◄────────────────┘                                   │
+              │
+              ▼
+       docs/<project-name>/  ← all output lands here
 ```
 
-**Token efficiency built in:** agents pass file paths, not content. Only the Requirements Summary travels inline between agents. Each agent reads files itself using its own tools.
+### Phase 2 — Execution (`project-manager`)
+
+Once setup is done, the `project-manager` drives the sprint story by story:
+
+```
+project-manager "lumina sprint 1"
+        │
+        ▼
+ Read progress.md ──── created on first run
+        │
+        ▼
+ Next ⏳ story → write sprint contract
+ docs/<project-name>/sprint-contracts/<story-id>.md
+        │
+        ▼
+ Invoke team agent ──── ONE story per subagent call
+        │
+        ▼
+ Invoke reviewer ──── story-mode: this story only
+        │
+   ┌────┴────┐
+APPROVED   REQUIRES FIXES → re-invoke team agent (max 3 attempts)
+   │
+   ✅ Update progress.md → next story
+        │
+        ▼ all stories done
+ Generate sprint-<n>-review.md
+```
+
+**Key design principle:** Each story runs as a focused micro-task subagent so context never fills up across a long sprint. The project-manager reads `progress.md` fresh at every step — state lives in files, not in context.
 
 ---
 
@@ -148,13 +195,26 @@ docs/<project-name>/
 
 ---
 
-## The four agents
+## The five agents
 
 ### `orchestrator`
 
-The conductor. Drives the full workflow from requirements to approved documentation. Coordinates the other three agents, generates all artifacts itself, and iterates with the reviewer until everything is approved.
+**Phase 1 — Setup.** Transforms a requirements document into all project documentation. Coordinates probe → artifact generation → team-builder → reviewer loop until everything is approved. Run once per project.
 
 **Invoke with:** path to your requirements `.md` file.
+
+### `project-manager`
+
+**Phase 2 — Execution.** The entry point for running the project after setup. Reads the sprint plan and `team-roster.md` to discover available team agents, then drives the sprint story by story:
+
+1. Writes a focused **sprint contract** for the next story (`docs/<project-name>/sprint-contracts/<story-id>.md`) — exact deliverables, acceptance criteria, and relevant spec paths.
+2. Delegates to the correct **team agent** as a micro-task subagent (one story, one subagent call — context never accumulates).
+3. Independently verifies output with the **reviewer** in story mode (checks only this story's acceptance criteria and DoD).
+4. Updates `progress.md` on approval; retries up to 3 times on failure before escalating as blocked.
+
+Tracks everything in `docs/<project-name>/progress.md`. Generates a sprint review document when all stories are done.
+
+**Invoke with:** project name and sprint number — e.g. `"lumina sprint 1"`. Re-invoke at any time to resume from where `progress.md` left off.
 
 ### `probe`
 
@@ -172,9 +232,14 @@ Analyzes the project and proposes a team composition (Project Manager always inc
 
 ### `reviewer`
 
-A strict documentation reviewer with expertise in PMBOK 7th edition, Scrum, and software engineering best practices. Checks every generated file for completeness, accuracy, cross-consistency, and methodology correctness. Reports issues with specific fixes. Runs in a loop until every issue is resolved.
+A strict documentation reviewer with expertise in PMBOK 7th edition, Scrum, and software engineering best practices. Invoked automatically by both the orchestrator and project-manager — not typically invoked directly by the user. Operates in two modes:
 
-**Invoke with:** project name + path to requirements doc.
+- **Full-project mode** (invoked by orchestrator): checks every generated file for completeness, accuracy, point arithmetic, naming consistency, and cross-consistency. Runs in a loop until all issues are resolved.
+- **Story mode** (invoked by project-manager): checks only the deliverables for a single story against its sprint contract, acceptance criteria, and relevant DoD items.
+
+Always returns one of two exact verdicts: `APPROVED` or `REQUIRES FIXES`.
+
+**Invoke with:** project name — e.g. `"lumina"` for full-project mode, or `"lumina E2-S1"` for story mode.
 
 ---
 
@@ -225,13 +290,13 @@ Each agent already knows the project's tech stack, has working agreements pointi
 ## Troubleshooting
 
 **The reviewer keeps finding issues and won't approve**
-The reviewer runs up to 5 iterations before stopping to avoid infinite loops. If issues persist beyond 2–3 passes, they are usually point arithmetic errors in the release roadmap or file path references that don't exist on disk. Check the reviewer's reported fixes carefully — each issue report includes a specific recommended correction.
+The orchestrator runs up to 5 reviewer iterations before stopping to avoid infinite loops. If issues persist beyond 2–3 passes, they are usually point arithmetic errors in the release roadmap or file path references that don't exist on disk. Check the reviewer's reported fixes carefully — each issue report includes a specific recommended correction. After 5 failed passes the orchestrator stops and escalates all remaining issues to you for manual resolution.
 
 **The orchestrator asks about PMP every time**
 That is by design — the choice is per-run, not saved. Answer `No` to skip PMP and generate only Agile + technical spec artifacts.
 
 **The team composition doesn't match my project**
-At Step 5 (team confirmation), you can reject the proposed team and describe what you actually need. `team-builder` will revise the composition before creating any files.
+When the orchestrator presents the proposed team for confirmation (before any files are created), you can reject it and describe what you actually need. `team-builder` will revise the composition before creating any files.
 
 **Generated artifacts reference files that don't exist**
 This happens if a technical spec stub was skipped because the condition wasn't met (e.g., no ML/AI detected, so `ml/pipeline-design.md` was not created), but the Definition of Done or an agent Working Agreement still references it. Re-run the reviewer — it catches and reports all dangling path references.
