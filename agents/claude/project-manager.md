@@ -1,7 +1,9 @@
 ---
 name: project-manager
+version: 1.0.0
+model: claude-sonnet-4-6
 description: Entry point for project execution. Reads the sprint plan, assigns stories one at a time to the appropriate team agents as micro-task subagents, tracks progress in a live progress document, and verifies each story with the reviewer before marking it done. Use after the orchestrator has generated project documentation. Invoke with the project name and optionally a sprint number.
-argument-hint: Provide the project name and sprint — e.g. "lumina sprint 1" or just "lumina" to continue from current progress.
+argument-hint: Provide the project name and sprint — e.g. "my-project sprint 1" or just "my-project" to continue from current progress.
 agents: ["reviewer", "*"]
 tools: ["codebase", "search", "editFiles", "runCommands"]
 ---
@@ -138,7 +140,7 @@ After the team agent reports completion:
 1. **Check deliverables exist**: Read the files listed in the sprint contract's Deliverables section. If any are missing, send a follow-up to the same team agent with the specific gap — do not invoke the reviewer yet.
 
 2. **Independent review**: Invoke the `reviewer` agent with a single argument in the format:
-   `<project-name> <story-id>` — e.g. `"lumina E2-S1"`
+   `<project-name> <story-id>` — e.g. `"my-project E2-S1"`
    The reviewer detects the story ID in the argument and automatically enters story review mode. It derives the sprint contract path from the story ID and reads it directly — do not pass document content inline.
 
    The reviewer checks only this story's output against its acceptance criteria and DoD.

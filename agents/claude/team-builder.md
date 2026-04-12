@@ -1,5 +1,7 @@
 ---
 name: team-builder
+version: 1.0.0
+model: claude-sonnet-4-6
 description: Analyzes a requirements document to determine the ideal development team composition, then creates a dedicated .agent.md file for each team member (Project Manager, developers, QA, designer, etc.). Uses probe to deeply understand the project before deciding on team structure. Use when you need to assemble a project team with specialized agents, or when the orchestrator needs team agents created.
 argument-hint: Provide the path to your requirements .md file, the project name, and optionally a Requirements Summary from probe.
 agents: ["probe"]
@@ -70,7 +72,7 @@ Add an `## Available Skills` section only if skills apply to the role. Use the t
 
 Use this template for developers, architects, QA engineers, ML/AI engineers, and DevOps engineers. Replace every `<placeholder>` with project-specific content — do not leave any placeholder text in the generated file.
 
-When filling in `argument-hint`, use the actual project name and real story IDs from the project's sprint plan (e.g. if the project is "lumina" with stories E1-S1 through E3-S4, write `"lumina E1-S1"` or `"implement lumina E2-S3 auth flow"`).
+When filling in `argument-hint`, use the actual project name and real story IDs from the project's sprint plan (e.g. if the project is "my-project" with stories E1-S1 through E3-S4, write `"my-project E1-S1"` or `"implement my-project E2-S3 auth flow"`).
 
 ```
 ---

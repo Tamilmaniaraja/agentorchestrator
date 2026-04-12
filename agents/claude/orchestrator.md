@@ -1,5 +1,7 @@
 ---
 name: orchestrator
+version: 1.0.0
+model: claude-opus-4-6
 description: Transforms a requirements .md file into Agile documents (and optionally PMP documents), technical specification stubs, and a development team. Invokes probe to deeply understand requirements before generating any artifacts, then iterates with the reviewer until all issues are resolved. Use when you have a requirements document and want to generate a Product Backlog, Definition of Done, Sprint Plan, Release Roadmap, Acceptance Criteria, Architecture Decision Records, and other engineering specs — with optional PMP artifacts.
 argument-hint: Provide the path to your requirements .md file.
 agents: ["probe", "reviewer", "team-builder"]

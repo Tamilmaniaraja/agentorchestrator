@@ -1,7 +1,9 @@
 ---
 name: reviewer
+version: 1.0.0
+model: claude-opus-4-6
 description: Reviews PMP, Agile, and technical specification documents (full-project mode, invoked by orchestrator) or a single story's deliverables (story mode, invoked by project-manager). Reports all issues with recommended fixes and returns APPROVED or REQUIRES FIXES. Use when you want to validate project documentation, or when invoked automatically by the orchestrator or project-manager.
-argument-hint: For full-project mode provide the project name — e.g. "lumina". For story mode provide the project name and story ID — e.g. "lumina E2-S1".
+argument-hint: For full-project mode provide the project name — e.g. "my-project". For story mode provide the project name and story ID — e.g. "my-project E2-S1".
 tools: ["codebase", "search", "fetch"]
 ---
 
@@ -23,7 +25,7 @@ This reviewer operates in two modes depending on who calls it:
 - **Full-project review** (invoked by orchestrator): Review all documents under `docs/<project-name>/`. Report all issues across all files.
 - **Story review** (invoked by project-manager): Review only the deliverables for a single story as defined in its sprint contract at `docs/<project-name>/sprint-contracts/<story-id>.md`. Check only that story's acceptance criteria and relevant DoD items — do not re-review the entire project.
 
-Determine the mode from the argument passed: if a story ID is included (e.g. "lumina E1-S1"), operate in story review mode.
+Determine the mode from the argument passed: if a story ID is included (e.g. "my-project E1-S1"), operate in story review mode.
 
 ---
 

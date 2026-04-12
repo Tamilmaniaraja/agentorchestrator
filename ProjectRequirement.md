@@ -1,60 +1,52 @@
-# 🛡️ High-Level System Requirements: LUMINA
-**Project Stage:** Pre-Alpha / Patent-Pending  
-**Security Tier:** Sovereign Intelligence (Zero-Cloud)
+# High-Level System Requirements: <Project Name>
+
+**Project Stage:** <e.g. Pre-Alpha / Beta / Production>
 
 ---
 
 ## 1. Project Vision
-Lumina is a multi-tenant, on-device AI assistant for iPadOS. It provides professional-grade document intelligence, semantic reconciliation, and lifecycle management while maintaining absolute data sovereignty through local-first processing on M-series silicon.
 
-## 2. Multi-Tenant Architecture (The "Sovereign Vault" Logic)
-Lumina must maintain a strict "Wall of Separation" between different clients or projects to prevent data leakage and AI cross-contamination.
+<Describe the product in 2–3 sentences: what it does, who it is for, and what problem it solves.>
 
-* **Requirement 2.1: Contextual Isolation.** The application must support a "Global Context Switcher" that mounts/unmounts specific Client Vaults.
-* **Requirement 2.2: Directory Siloing.** Each Tenant (Client) must have a dedicated, unique directory within the iPadOS Sandbox.
-* **Requirement 2.3: Ephemeral Inference.** When a user switches from "Client A" to "Client B," all active vector embeddings and LLM context windows associated with "Client A" must be purged from volatile memory (RAM).
+## 2. Core Features
 
-## 3. Security & Data Encryption
-Lumina leverages the Apple Silicon "Secure Enclave" to provide enterprise-grade privacy for small business data.
+<List the primary features the product must deliver. Focus on *what*, not *how*.>
 
-| Component | Requirement | Technology |
-| :--- | :--- | :--- |
-| **Data at Rest** | All PDFs and Databases must be encrypted per-vault. | AES-256 (File-level) |
-| **Key Management** | Encryption keys must be tied to the device's hardware. | Apple Secure Enclave |
-| **Biometrics** | Per-vault "Deep Lock" for sensitive clients. | FaceID / TouchID |
-| **Data Egress** | **Zero.** The app must never transmit document data. | Network Sandbox Rules |
+- Feature 1
+- Feature 2
+- Feature 3
 
-## 4. Functional Requirements (The "Delta Engine")
+## 3. Non-Functional Requirements
 
-### 4.1 Semantic Comparison
-* The system shall perform "Intent-Based" comparison between document versions.
-* It must align clauses using high-dimensional vector similarity scores rather than simple character diffing.
+| Category | Requirement |
+| :--- | :--- |
+| **Performance** | <e.g. API response < 200 ms at p95> |
+| **Security** | <e.g. Authentication required for all endpoints> |
+| **Scalability** | <e.g. Support up to N concurrent users> |
+| **Availability** | <e.g. 99.9% uptime SLA> |
 
-### 4.2 On-Device RAG (Retrieval-Augmented Generation)
-* The system shall index documents locally using Apple's `NaturalLanguage` and `CoreML` frameworks.
-* Users must be able to query their "Vault" via natural language with 100% on-device inference.
+## 4. Technical Stack & Constraints
 
-### 4.3 Deterministic Source Anchoring
-* Every AI-generated insight or summary must be mapped to specific $(x, y)$ coordinates in the source PDF.
-* The UI must support a "Verification Link" that instantly scrolls the PDF viewer to the relevant paragraph.
+- **Platform / Target:** <e.g. Web, iOS, Android, CLI>
+- **Language / Framework:** <e.g. TypeScript / Next.js, Swift / SwiftUI, Python / FastAPI>
+- **Database:** <e.g. PostgreSQL, SQLite, SwiftData>
+- **Hosting / Infrastructure:** <e.g. AWS, on-device only, self-hosted>
 
-## 5. Technical Stack & Constraints (2026 Standards)
+## 5. Out of Scope
 
-* **Hardware Target:** iPad Pro / iPad Air with M1, M2, M4, or M5 silicon.
-* **OS Target:** iPadOS 18.0 or later (Optimized for iPadOS 19 Apple Intelligence SDK).
-* **Database:** SwiftData for relational metadata; custom binary stores for vector embeddings.
-* **OCR Engine:** VisionKit (On-device spatial text extraction).
-* **LLM Engine:** Local execution via `CoreML` / `MLX` / `Apple Intelligence Writing Tools`.
+<List anything explicitly excluded from this project.>
 
-## 6. UI/UX Standard: "Clean Office" 
-The interface must adhere to the professional Gold/White aesthetic to ensure high trust and visibility.
+- Item 1
+- Item 2
 
-* **Primary Palette:** Studio White (#FFFFFF), Lumina Gold Gradient (#A67C00), Charcoal Gray (#333333).
-* **Interaction:** Pencil-First design. Support for Apple Pencil annotations on top of the AI-intelligence layer.
-* **Layout:** Native iPadOS Sidebar architecture with multi-window support.
+## 6. Compliance & Constraints
 
----
+<List any regulatory, legal, or organizational constraints. Remove this section if not applicable.>
 
-## 7. Compliance & Audit
-* **Audit Trail:** The app shall maintain a local, encrypted log of all "Significant Insights" and "Drafted Responses" to allow users to review AI actions for professional liability purposes.
-* **Regulatory Readiness:** Architecture is designed to exceed CCPA and GDPR requirements by never processing data in a third-party cloud.
+- <e.g. GDPR: no personal data stored in third-party cloud>
+- <e.g. All encryption keys managed on-device>
+
+## 7. Team & Timeline
+
+- **Approximate team size:** <e.g. 3–5 engineers>
+- **Target delivery horizon:** <e.g. MVP in 3 months, full release in 6 months>

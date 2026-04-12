@@ -1,5 +1,7 @@
 ---
 name: probe
+version: 1.0.0
+model: claude-sonnet-4-6
 description: Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to stress-test a plan, get probed on their design, or mentions "probe my plan".
 argument-hint: Paste your plan, design, or point to a requirements file to get probed on.
 tools: ["codebase", "search", "fetch"]

@@ -1,4 +1,8 @@
-# agentorcustrator
+# agentorchestrator
+
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Claude](https://img.shields.io/badge/Claude-Opus%204.6%20%7C%20Sonnet%204.6-orange)
 
 A Claude Code multi-agent system that transforms a requirements document into a full project documentation suite — Agile artifacts, technical specification stubs, a development team of specialized agents, and optional PMP documents — all reviewed and self-corrected before delivery.
 
@@ -93,7 +97,7 @@ You invoke: orchestrator ProjectRequirement.md
 Once setup is done, the `project-manager` drives the sprint story by story:
 
 ```
-project-manager "lumina sprint 1"
+project-manager "my-project sprint 1"
         │
         ▼
  Read progress.md ──── created on first run
@@ -128,15 +132,29 @@ APPROVED   REQUIRES FIXES → re-invoke team agent (max 3 attempts)
 - [Claude Code](https://claude.ai/code) — the Claude Code CLI or desktop app
 - A requirements document written in Markdown
 
-### Usage
+### Claude model versions
 
-1. Copy the `agents/` folder into your project's `.github/agents/` directory.
+Each agent is pinned to a specific Claude model in its frontmatter:
+
+| Agent | Model | Reason |
+|---|---|---|
+| `orchestrator` | `claude-opus-4-6` | Drives the full pipeline; needs the strongest reasoning |
+| `reviewer` | `claude-opus-4-6` | Strict quality checks; must catch subtle cross-file inconsistencies |
+| `probe` | `claude-sonnet-4-6` | Structured output; fast and accurate for analysis tasks |
+| `team-builder` | `claude-sonnet-4-6` | Template-based file generation |
+| `project-manager` | `claude-sonnet-4-6` | Coordination and state management |
+
+To override the model for any agent, change the `model:` field in its frontmatter. See the [Claude model IDs](https://docs.anthropic.com/en/docs/about-claude/models) for available options.
+
+### Usage — Claude Code
+
+1. Copy the `agents/claude/` folder into your project's `.github/agents/` directory.
 
    ```bash
-   cp -r agents/ your-project/.github/agents/
+   cp -r agents/claude/ your-project/.github/agents/
    ```
 
-2. Write your requirements in a `.md` file (see [`ProjectRequirement.md`](ProjectRequirement.md) as an example).
+2. Write your requirements in a `.md` file (see [`ProjectRequirement.md`](ProjectRequirement.md) as a template).
 
 3. In Claude Code, invoke the orchestrator:
 
@@ -155,6 +173,30 @@ APPROVED   REQUIRES FIXES → re-invoke team agent (max 3 attempts)
 5. Confirm the proposed team composition.
 
 6. Wait for the reviewer to return **APPROVED**. All output lands in `docs/<project-name>/`.
+
+### Usage — GitHub Copilot
+
+1. Copy the `agents/copilot/` folder into your project's `.github/agents/` directory.
+
+   ```bash
+   cp -r agents/copilot/ your-project/.github/agents/
+   ```
+
+2. Write your requirements in a `.md` file.
+
+3. In VS Code Copilot Chat (agent mode), invoke the orchestrator:
+
+   ```
+   @orchestrator my-requirements.md
+   ```
+
+4. Answer the two prompts:
+   - Confirm or adjust the inferred project name
+   - Choose whether to generate PMP documents
+
+5. Confirm the proposed team composition.
+
+6. Wait for the self-review to complete. All output lands in `docs/<project-name>/`.
 
 ---
 
@@ -214,7 +256,7 @@ docs/<project-name>/
 
 Tracks everything in `docs/<project-name>/progress.md`. Generates a sprint review document when all stories are done.
 
-**Invoke with:** project name and sprint number — e.g. `"lumina sprint 1"`. Re-invoke at any time to resume from where `progress.md` left off.
+**Invoke with:** project name and sprint number — e.g. `"my-project sprint 1"`. Re-invoke at any time to resume from where `progress.md` left off.
 
 ### `probe`
 
@@ -239,20 +281,13 @@ A strict documentation reviewer with expertise in PMBOK 7th edition, Scrum, and 
 
 Always returns one of two exact verdicts: `APPROVED` or `REQUIRES FIXES`.
 
-**Invoke with:** project name — e.g. `"lumina"` for full-project mode, or `"lumina E2-S1"` for story mode.
+**Invoke with:** project name — e.g. `"my-project"` for full-project mode, or `"my-project E2-S1"` for story mode.
 
 ---
 
 ## Example output
 
-The [`docs/your-project/`](docs/your-project/) folder contains real output generated from [`ProjectRequirement.md`](ProjectRequirement.md) — a native iPadOS app with on-device AI, cryptographic vaults, and compliance requirements. It includes:
-
-- 8 Epics, 48 User Stories, 476 total story points
-- 6 delivery sprints + buffer sprint
-- 8 team agent files (iOS Architect, iOS Developer, Security Engineer, ML/CoreML Engineer, UX Designer, QA Engineer, Compliance Engineer, Project Manager)
-- 5 ADRs covering the most consequential technical decisions
-- Full SwiftData schema with 6 entities and 15-case audit action enum
-- Threat model, ML pipeline design, GDPR/CCPA privacy impact assessment
+Run the orchestrator on your own requirements document to generate your project's full documentation suite. Output lands in `docs/<project-name>/` and will include all Agile artifacts, technical spec stubs, and team agent files appropriate for your project's complexity.
 
 ---
 
@@ -269,7 +304,7 @@ Effective requirements documents include:
 - **Explicit constraints** — what is out of scope, what must not happen
 - **Scale and timeline** — approximate team size and delivery horizon
 
-See [`ProjectRequirement.md`](ProjectRequirement.md) for a worked example — it is intentionally complex (a native iPadOS app with on-device AI, cryptographic vaults, and compliance requirements). Your requirements doc can be much simpler; the orchestrator scales to the complexity of what you provide.
+Your requirements doc can be as simple or complex as your project demands — the orchestrator scales to match.
 
 ---
 
